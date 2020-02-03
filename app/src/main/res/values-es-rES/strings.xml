@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about">Acerca de</string>
+    <string name="author_info">Info autor</string>
+    <string name="favorite_quotations">Citas favoritas</string>
+    <string name="get_quotations">Citas aleatorias</string>
+    <string name="insert_name">Introduzca su nombre</string>
+    <string name="name_identifies">Nombre que identifica el usuario</string>
+    <string name="quotations_language">Las citas serán mostradas en el lenguaje seleccionado</string>
+    <string name="random_quotation">Cita aleatoria</string>
+    <string name="request_http">Las peticiones serán procesadas usnado el método HTTP seleccionado</string>
+    <string name="sample_autor">Este es un simple actor</string>
+    <string name="sample_quotation">Esta es una simple cita</string>
+    <string name="settings">Ajustes</string>
+    <string name="username">Usuario</string>
+    <string name="press_refresh">Hola %1s!\\n Pulsa actualizar para obtener una nueva cita</string>
+    <string name="app_name" translatable="false">Qutoajfasa</string>
+</resources>
