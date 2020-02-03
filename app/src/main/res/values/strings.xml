@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QuotationShake</string>
+    <string name="app_name" translatable="false">QuotationShake</string>
     <string name="get_quotations">Random Quotations</string>
     <string name="favorite_quotations">Favorite Quotations</string>
     <string name="settings">Settings</string>
@@ -18,4 +18,6 @@
     <string name="sample_quotation">This is a sample quotation</string>
     <string name="sample_autor">This is a sample autor</string>
     <string name="username">Nameless One</string>
+    <string name="language_english">English</string>
+    <string name="language_russian">Russian</string>
 </resources>

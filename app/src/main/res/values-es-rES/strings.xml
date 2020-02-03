@@ -14,5 +14,6 @@
     <string name="settings">Ajustes</string>
     <string name="username">Usuario</string>
     <string name="press_refresh">Hola %1s!\\n Pulsa actualizar para obtener una nueva cita</string>
-    <string name="app_name" translatable="false">Qutoajfasa</string>
+    <string name="language_english">Inglés</string>
+    <string name="language_russian">Ruso</string>
 </resources>
