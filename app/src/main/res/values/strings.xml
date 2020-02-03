@@ -20,4 +20,9 @@
     <string name="username">Nameless One</string>
     <string name="language_english">English</string>
     <string name="language_russian">Russian</string>
+    <string name="menu_title_add">Add</string>
+    <string name="menu_title_refresh">Refresh</string>
+    <string name="menu_title_clear_all">Clear All</string>
+    <string name="menu_favourite_dialog_title">Warning</string>
+    <string name="menu_favourite_dialog_message">Are you sure that you want to delete ALL your favourite quotations?</string>
 </resources>

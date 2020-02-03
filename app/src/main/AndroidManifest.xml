@@ -9,10 +9,36 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".QuotationActivity" android:label="@string/get_quotations"/>
-        <activity android:name=".FavouriteActivity" android:label="@string/favorite_quotations"/>
-        <activity android:name=".SettingsActivity" android:label="@string/settings" android:windowSoftInputMode="stateAlwaysHidden"/>
-        <activity android:name=".AboutActivity" android:label="@string/about"/>
+        <activity
+            android:name=".QuotationActivity"
+            android:label="@string/get_quotations"
+            android:parentActivityName=".DashboardActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DashboardActivity" />
+        </activity>
+        <activity android:name=".FavouriteActivity"
+            android:label="@string/favorite_quotations"
+            android:parentActivityName=".DashboardActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DashboardActivity" />
+        </activity>
+        <activity android:name=".SettingsActivity"
+            android:label="@string/settings"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:parentActivityName=".DashboardActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DashboardActivity" />
+        </activity>
+        <activity android:name=".AboutActivity"
+            android:label="@string/about"
+            android:parentActivityName=".DashboardActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DashboardActivity" />
+        </activity>
         <activity android:name=".DashboardActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

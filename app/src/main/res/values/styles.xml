@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SettingsTheme">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+        <item name="android:textSize">@dimen/dimen_settings_chars</item>
+    </style>
 </resources>

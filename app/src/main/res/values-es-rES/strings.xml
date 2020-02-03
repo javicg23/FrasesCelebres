@@ -16,4 +16,9 @@
     <string name="press_refresh">Hola %1s!\\n Pulsa actualizar para obtener una nueva cita</string>
     <string name="language_english">Inglés</string>
     <string name="language_russian">Ruso</string>
+    <string name="menu_title_add">Añadir</string>
+    <string name="menu_title_refresh">Actualizar</string>
+    <string name="menu_title_clear_all">Borrar todo</string>
+    <string name="menu_favourite_dialog_message">¿Estás seguro de que desea eliminar TODAS las citas favoritas?</string>
+    <string name="menu_favourite_dialog_title">Aviso</string>
 </resources>
