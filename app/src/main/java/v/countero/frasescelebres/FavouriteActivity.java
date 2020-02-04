@@ -2,6 +2,9 @@ package v.countero.frasescelebres;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,12 +14,31 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.ArrayList;
+
+import v.countero.frasescelebres.adapters.RecyclerAdapter;
+import v.countero.frasescelebres.pojos.Quotation;
+
 public class FavouriteActivity extends AppCompatActivity {
 
+    RecyclerView recycler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourite);
+
+        recycler = findViewById(R.id.recyclerFavourite);
+
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(this);
+
+        DividerItemDecoration decoration = new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
+        recycler.setLayoutManager(manager);
+        recycler.addItemDecoration(decoration);
+
+        ArrayList<Quotation> data = getMockQuotations();
+        RecyclerAdapter adapter = new RecyclerAdapter(data);
+        recycler.setAdapter(adapter);
+
     }
 
     public void searchAuthor(View view) {
@@ -60,5 +82,14 @@ public class FavouriteActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    public ArrayList<Quotation> getMockQuotations() {
+        ArrayList<Quotation> list = new ArrayList<Quotation>();
+        for (int i = 0; i < 20; i++) {
+            Quotation quote = new Quotation(i + "",i + "");
+            list.add(quote);
+        }
+        return list;
     }
 }
