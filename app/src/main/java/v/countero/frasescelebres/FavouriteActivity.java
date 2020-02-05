@@ -10,10 +10,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import v.countero.frasescelebres.adapters.RecyclerAdapter;
@@ -22,6 +28,8 @@ import v.countero.frasescelebres.pojos.Quotation;
 public class FavouriteActivity extends AppCompatActivity {
 
     RecyclerView recycler;
+    RecyclerAdapter adapter = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,16 +43,57 @@ public class FavouriteActivity extends AppCompatActivity {
         recycler.setLayoutManager(manager);
         recycler.addItemDecoration(decoration);
 
-        ArrayList<Quotation> data = getMockQuotations();
-        RecyclerAdapter adapter = new RecyclerAdapter(data);
+        final ArrayList<Quotation> data = getMockQuotations();
+
+        RecyclerAdapter.OnItemClickListener clickListener = new RecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClickListener(int position) {
+                showWikipediaAuthorByPosition(position);
+            }
+
+        };
+        RecyclerAdapter.OnItemLongClickListner longClickListner = new RecyclerAdapter.OnItemLongClickListner() {
+            @Override
+            public void onItemLongClickListener(int position) {
+                showRemovedDialog(position);
+            }
+        };
+        adapter = new RecyclerAdapter(data, clickListener, longClickListner);
         recycler.setAdapter(adapter);
 
     }
 
-    public void searchAuthor(View view) {
+    private void showRemovedDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.alert_delete_confirmation);
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+            }
+        });
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                adapter.removeElementByPosition(position);
+            }
+        });
+        builder.create().show();
+    }
+
+    private void showWikipediaAuthorByPosition(int position) {
+        Quotation quote = adapter.getQuotationByPosition(position);
+        if (quote != null && quote.getQuoteAuthor().compareTo("") != 0 && quote.getQuoteAuthor() != null) {
+            searchAuthor(quote.getQuoteAuthor());
+        } else {
+            Toast.makeText(getApplicationContext(),R.string.toast_cannot_obtain_information , Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void searchAuthor(String author) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Special:Search?search=" + "Valencia"));
+        intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Special:Search?search=" + author));
 
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
@@ -86,10 +135,16 @@ public class FavouriteActivity extends AppCompatActivity {
 
     public ArrayList<Quotation> getMockQuotations() {
         ArrayList<Quotation> list = new ArrayList<Quotation>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 10; i < 30; i++) {
             Quotation quote = new Quotation(i + "",i + "");
             list.add(quote);
         }
+        Quotation quote = new Quotation("cita 1","Albert Einstein");
+        list.add(quote);
+        quote = new Quotation("cita 2","Leonhard Euler");
+        list.add(quote);
+        quote = new Quotation("cita 2","");
+        list.add(quote);
         return list;
     }
 }

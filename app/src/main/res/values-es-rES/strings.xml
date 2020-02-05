@@ -21,4 +21,6 @@
     <string name="menu_title_clear_all">Borrar todo</string>
     <string name="menu_favourite_dialog_message">¿Estás seguro de que desea eliminar TODAS las citas favoritas?</string>
     <string name="menu_favourite_dialog_title">Aviso</string>
+    <string name="toast_cannot_obtain_information">No es posible obtener la información solicitada</string>
+    <string name="alert_delete_confirmation">¿Esta seguro que quiere eliminar esta cita?</string>
 </resources>
