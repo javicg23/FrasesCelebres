@@ -52,13 +52,13 @@ public class FavouriteActivity extends AppCompatActivity {
             }
 
         };
-        RecyclerAdapter.OnItemLongClickListner longClickListner = new RecyclerAdapter.OnItemLongClickListner() {
+        RecyclerAdapter.OnItemLongClickListner longClickListener = new RecyclerAdapter.OnItemLongClickListner() {
             @Override
             public void onItemLongClickListener(int position) {
                 showRemovedDialog(position);
             }
         };
-        adapter = new RecyclerAdapter(data, clickListener, longClickListner);
+        adapter = new RecyclerAdapter(data, clickListener, longClickListener);
         recycler.setAdapter(adapter);
 
     }
@@ -105,12 +105,15 @@ public class FavouriteActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_favourite, menu);
+        setInvisibleClearAll(menu.findItem(R.id.menu_clear_all));
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                return super.onOptionsItemSelected(item);
             case R.id.menu_clear_all:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setIcon(android.R.drawable.stat_sys_warning);
@@ -125,10 +128,11 @@ public class FavouriteActivity extends AppCompatActivity {
                 builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        deleteData();
+                        setInvisibleClearAll(item);
                     }
                 });
-                break;
+                builder.create().show();
         }
         return true;
     }
@@ -146,5 +150,15 @@ public class FavouriteActivity extends AppCompatActivity {
         quote = new Quotation("cita 2","");
         list.add(quote);
         return list;
+    }
+
+    public void deleteData() {
+        adapter.removeAllData();
+    }
+
+    public void setInvisibleClearAll(MenuItem item) {
+        if (adapter.getItemCount() <= 0) {
+            item.setVisible(false);
+        }
     }
 }

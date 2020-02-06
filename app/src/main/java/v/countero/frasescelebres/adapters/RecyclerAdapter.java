@@ -83,6 +83,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public void removeElementByPosition(int position) {
         listQuotation.remove(position);
         notifyItemRemoved(position);
-        //notifyDataSetChanged();
+    }
+
+    public void removeAllData() {
+        listQuotation.clear();
+        notifyDataSetChanged();
     }
 }

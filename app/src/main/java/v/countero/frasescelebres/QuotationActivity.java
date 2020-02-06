@@ -3,8 +3,11 @@ package v.countero.frasescelebres;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class QuotationActivity extends AppCompatActivity {
 
@@ -27,4 +30,24 @@ public class QuotationActivity extends AppCompatActivity {
         tvQuotation.setText(getString(R.string.sample_quotation));
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_quotation, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                return super.onOptionsItemSelected(item);
+            case R.id.menu_add:
+                break;
+            case R.id.menu_refresh:
+                newQuotation(item.getActionView());
+                super.onOptionsItemSelected(item);
+        }
+        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        return true;
+    }
 }
