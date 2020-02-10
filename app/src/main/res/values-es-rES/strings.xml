@@ -5,17 +5,12 @@
     <string name="favorite_quotations">Citas favoritas</string>
     <string name="get_quotations">Citas aleatorias</string>
     <string name="insert_name">Introduzca su nombre</string>
-    <string name="name_identifies">Nombre que identifica el usuario</string>
-    <string name="quotations_language">Las citas serán mostradas en el lenguaje seleccionado</string>
     <string name="random_quotation">Cita aleatoria</string>
-    <string name="request_http">Las peticiones serán procesadas usnado el método HTTP seleccionado</string>
-    <string name="sample_autor">Este es un simple actor</string>
-    <string name="sample_quotation">Esta es una simple cita</string>
+    <string name="sample_autor">Este es un simple actor %1$d</string>
+    <string name="sample_quotation">Esta es una simple cita %1$d</string>
     <string name="settings">Ajustes</string>
     <string name="username">Usuario</string>
     <string name="press_refresh">Hola %1s!\\n Pulsa actualizar para obtener una nueva cita</string>
-    <string name="language_english">Inglés</string>
-    <string name="language_russian">Ruso</string>
     <string name="menu_title_add">Añadir</string>
     <string name="menu_title_refresh">Actualizar</string>
     <string name="menu_title_clear_all">Borrar todo</string>
@@ -23,4 +18,16 @@
     <string name="menu_favourite_dialog_title">Aviso</string>
     <string name="toast_cannot_obtain_information">No es posible obtener la información solicitada</string>
     <string name="alert_delete_confirmation">¿Esta seguro que quiere eliminar esta cita?</string>
+    <string name="settings_database">Método de acceso a la base de datos</string>
+    <string name="settings_database_resume">Se accederá a la base de datos con el método seleccionado</string>
+    <string name="settings_english">Inglés</string>
+    <string name="settings_http">Método de petición HTTP</string>
+    <string name="settings_language_resume">Las citas serán mostradas en el lenguaje seleccionado</string>
+    <string name="settings_http_resume">Las peticiones se realizarán utlizando el método HTTP seleccionado</string>
+    <string name="settings_language">Lenguaje de la cita</string>
+    <string name="settings_russian">Ruso</string>
+    <string name="settings_username">Nombre de usuario</string>
+    <string name="settings_username_resume">Nombre que identifica al usuario</string>
+    <string name="settings_category_database">Base de datos</string>
+    <string name="settings_category_web_service">Servicios web</string>
 </resources>
