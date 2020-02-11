@@ -18,6 +18,7 @@ public class QuotationActivity extends AppCompatActivity {
     private int nQuotationReceived = 0;
     private MenuItem menuAdd;
     private String quote, author;
+    private boolean addVisible;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -45,10 +46,13 @@ public class QuotationActivity extends AppCompatActivity {
                 user = getString(R.string.username);
             }
             tvQuotation.setText(tvQuotation.getText().toString().replace("%1s", user));
+            addVisible = true;
         } else {
-            tvQuotation.setText(savedInstanceState.getString("quote"));
-            tvAuthor.setText(savedInstanceState.getString("author"));
-            //menuAdd.setVisible(savedInstanceState.getBoolean("addVisible"));
+            quote = savedInstanceState.getString("quote");
+            author = savedInstanceState.getString("author");
+            tvQuotation.setText(quote);
+            tvAuthor.setText(author);
+            addVisible = savedInstanceState.getBoolean("addVisible");
             nQuotationReceived = savedInstanceState.getInt("nQuotation");
         }
     }
@@ -64,7 +68,7 @@ public class QuotationActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_quotation, menu);
         menuAdd = menu.findItem(R.id.menu_add);
-        menuAdd.setVisible(true);
+        menuAdd.setVisible(addVisible);
         return true;
     }
 
