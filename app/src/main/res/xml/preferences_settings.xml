@@ -21,4 +21,12 @@
             android:summary="@string/settings_http_resume"
             android:title="@string/settings_http" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_web_service">
+        <ListPreference
+            android:entries="@array/db_type"
+            android:entryValues="@array/db_type"
+            android:key="db"
+            android:summary="@string/settings_database_resume"
+            android:title="@string/settings_database" />
+    </PreferenceCategory>
 </PreferenceScreen>

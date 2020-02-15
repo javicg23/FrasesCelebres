@@ -1,7 +1,18 @@
 package v.countero.frasescelebres.pojos;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "quotation_table")
 public class Quotation {
-    private String quoteText, quoteAuthor;
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+    @ColumnInfo(name = "quoteColumn") @NonNull
+    private String quoteText;
+    @ColumnInfo(name = "authorColumn")
+    private String quoteAuthor;
 
     public Quotation(String quoteText, String quoteAuthor) {
         this.quoteText = quoteText;
@@ -22,5 +33,13 @@ public class Quotation {
 
     public void setQuoteAuthor(String quoteAuthor) {
         this.quoteAuthor = quoteAuthor;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,13 +25,21 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import v.countero.frasescelebres.adapters.RecyclerAdapter;
+import v.countero.frasescelebres.databases.QuotationDatabase;
 import v.countero.frasescelebres.databases.QuotationSQLiteOpenHelper;
 import v.countero.frasescelebres.pojos.Quotation;
 
 public class FavouriteActivity extends AppCompatActivity {
 
     RecyclerView recycler;
-    RecyclerAdapter adapter = null;
+    private RecyclerAdapter adapter = null;
+    private String databaseMethod = "SQLiteOpenHelper";
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("db", databaseMethod);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +54,27 @@ public class FavouriteActivity extends AppCompatActivity {
         recycler.setLayoutManager(manager);
         recycler.addItemDecoration(decoration);
 
-        final ArrayList<Quotation> data = QuotationSQLiteOpenHelper.getInstance(this).getQuotations();
+        if (savedInstanceState == null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String user = prefs.getString("username", "");
+            if (user.equals("")) {
+                user = getString(R.string.username);
+            }
+        } else {
+            databaseMethod = savedInstanceState.getString("db");
+        }
+
+        ArrayList<Quotation> data = null;
+
+        switch (databaseMethod) {
+            case "SQLiteOpenHelper":
+                data = QuotationSQLiteOpenHelper.getInstance(this).getQuotations();
+                break;
+            case "Room":
+                data = (ArrayList<Quotation>) QuotationDatabase.getInstance(this).quotationDAO().getQuotations();
+                break;
+        }
+
 
         RecyclerAdapter.OnItemClickListener clickListener = new RecyclerAdapter.OnItemClickListener() {
             @Override
@@ -76,7 +106,14 @@ public class FavouriteActivity extends AppCompatActivity {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                QuotationSQLiteOpenHelper.getInstance(getBaseContext()).removeQuotation(adapter.getQuotationByPosition(position).getQuoteText());
+                switch (databaseMethod) {
+                    case "SQLiteOpenHelper":
+                        QuotationSQLiteOpenHelper.getInstance(getBaseContext()).removeQuotation(adapter.getQuotationByPosition(position).getQuoteText());
+                        break;
+                    case "Room":
+                        QuotationDatabase.getInstance(getBaseContext()).quotationDAO().deleteQuotation(adapter.getQuotationByPosition(position));
+                        break;
+                }
                 adapter.removeElementByPosition(position);
             }
         });
@@ -156,7 +193,14 @@ public class FavouriteActivity extends AppCompatActivity {
 
     public void deleteData() {
         adapter.removeAllData();
-        QuotationSQLiteOpenHelper.getInstance(this).removeAll();
+        switch (databaseMethod) {
+            case "SQLiteOpenHelper":
+                QuotationSQLiteOpenHelper.getInstance(this).removeAll();
+                break;
+            case "Room":
+                QuotationDatabase.getInstance(this).quotationDAO().deleteAllQuotations();
+                break;
+        }
     }
 
     public void setInvisibleClearAll(MenuItem item) {

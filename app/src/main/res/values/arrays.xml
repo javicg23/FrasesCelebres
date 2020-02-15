@@ -12,4 +12,8 @@
         <item>0</item>
         <item>1</item>
     </integer-array>
+    <integer-array name="db_type">
+        <item>@string/sqlite_openhelper</item>
+        <item>@string/room</item>
+    </integer-array>
 </resources>

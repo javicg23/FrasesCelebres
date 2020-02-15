@@ -12,7 +12,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import v.countero.frasescelebres.databases.QuotationDatabase;
 import v.countero.frasescelebres.databases.QuotationSQLiteOpenHelper;
+import v.countero.frasescelebres.pojos.Quotation;
 
 public class QuotationActivity extends AppCompatActivity {
 
@@ -21,6 +23,7 @@ public class QuotationActivity extends AppCompatActivity {
     private MenuItem menuAdd;
     private String quote, author;
     private boolean addVisible;
+    private String databaseMethod = "SQLiteOpenHelper";
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -29,6 +32,7 @@ public class QuotationActivity extends AppCompatActivity {
         outState.putString("author", author);
         outState.putInt("nQuotation", nQuotationReceived);
         outState.putBoolean("addVisible", menuAdd.isVisible());
+        outState.putString("db", databaseMethod);
     }
 
     @Override
@@ -56,6 +60,7 @@ public class QuotationActivity extends AppCompatActivity {
             tvAuthor.setText(author);
             addVisible = savedInstanceState.getBoolean("addVisible");
             nQuotationReceived = savedInstanceState.getInt("nQuotation");
+            databaseMethod = savedInstanceState.getString("db");
         }
     }
 
@@ -80,16 +85,35 @@ public class QuotationActivity extends AppCompatActivity {
             case android.R.id.home:
                 return super.onOptionsItemSelected(item);
             case R.id.menu_add:
-                QuotationSQLiteOpenHelper.getInstance(this).insertQuotation(quote,author);
+                switch (databaseMethod) {
+                    case "SQLiteOpenHelper":
+                        QuotationSQLiteOpenHelper.getInstance(this).insertQuotation(quote, author);
+                        break;
+                    case "Room":
+                        QuotationDatabase.getInstance(this).quotationDAO().insertQuotation(new Quotation(quote, author));
+                        break;
+                }
                 menuAdd.setVisible(false);
                 break;
             case R.id.menu_refresh:
                 nQuotationReceived++;
                 newQuotation(item.getActionView(), nQuotationReceived);
-                if (QuotationSQLiteOpenHelper.getInstance(this).existQuotation(quote)) {
-                    addVisible = false;
-                } else {
-                    addVisible = true;
+                switch (databaseMethod) {
+                    case "SQLiteOpenHelper":
+                        if (QuotationSQLiteOpenHelper.getInstance(this).existQuotation(quote)) {
+                            addVisible = false;
+                        } else {
+                            addVisible = true;
+                        }
+                        break;
+                    case "Room":
+                        Quotation textQuotationExistence = QuotationDatabase.getInstance(this).quotationDAO().getQuotationText(tvQuotation.getText().toString());
+                        if (!textQuotationExistence.getQuoteText().equals("")) {
+                            addVisible = false;
+                        } else {
+                            addVisible = true;
+                        }
+                        break;
                 }
                 menuAdd.setVisible(addVisible);
                 super.onOptionsItemSelected(item);
