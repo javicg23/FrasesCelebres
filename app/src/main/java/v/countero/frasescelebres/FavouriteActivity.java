@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import v.countero.frasescelebres.adapters.RecyclerAdapter;
+import v.countero.frasescelebres.databases.QuotationSQLiteOpenHelper;
 import v.countero.frasescelebres.pojos.Quotation;
 
 public class FavouriteActivity extends AppCompatActivity {
@@ -43,7 +44,7 @@ public class FavouriteActivity extends AppCompatActivity {
         recycler.setLayoutManager(manager);
         recycler.addItemDecoration(decoration);
 
-        final ArrayList<Quotation> data = getMockQuotations();
+        final ArrayList<Quotation> data = QuotationSQLiteOpenHelper.getInstance(this).getQuotations();
 
         RecyclerAdapter.OnItemClickListener clickListener = new RecyclerAdapter.OnItemClickListener() {
             @Override
@@ -75,6 +76,7 @@ public class FavouriteActivity extends AppCompatActivity {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                QuotationSQLiteOpenHelper.getInstance(getBaseContext()).removeQuotation(adapter.getQuotationByPosition(position).getQuoteText());
                 adapter.removeElementByPosition(position);
             }
         });
@@ -154,6 +156,7 @@ public class FavouriteActivity extends AppCompatActivity {
 
     public void deleteData() {
         adapter.removeAllData();
+        QuotationSQLiteOpenHelper.getInstance(this).removeAll();
     }
 
     public void setInvisibleClearAll(MenuItem item) {

@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import v.countero.frasescelebres.databases.QuotationSQLiteOpenHelper;
+
 public class QuotationActivity extends AppCompatActivity {
 
     private TextView tvQuotation, tvAuthor;
@@ -46,7 +48,7 @@ public class QuotationActivity extends AppCompatActivity {
                 user = getString(R.string.username);
             }
             tvQuotation.setText(tvQuotation.getText().toString().replace("%1s", user));
-            addVisible = true;
+            addVisible = false;
         } else {
             quote = savedInstanceState.getString("quote");
             author = savedInstanceState.getString("author");
@@ -78,11 +80,18 @@ public class QuotationActivity extends AppCompatActivity {
             case android.R.id.home:
                 return super.onOptionsItemSelected(item);
             case R.id.menu_add:
+                QuotationSQLiteOpenHelper.getInstance(this).insertQuotation(quote,author);
                 menuAdd.setVisible(false);
                 break;
             case R.id.menu_refresh:
                 nQuotationReceived++;
                 newQuotation(item.getActionView(), nQuotationReceived);
+                if (QuotationSQLiteOpenHelper.getInstance(this).existQuotation(quote)) {
+                    addVisible = false;
+                } else {
+                    addVisible = true;
+                }
+                menuAdd.setVisible(addVisible);
                 super.onOptionsItemSelected(item);
         }
         Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
