@@ -9,12 +9,14 @@
         android:title="@string/settings_username" />
     <PreferenceCategory android:title="@string/settings_category_web_service">
         <ListPreference
+            android:defaultValue="@string/settings_english"
             android:entries="@array/settings_languages"
             android:entryValues="@array/settings_languages"
             android:key="language"
             android:summary="@string/settings_language_resume"
             android:title="@string/settings_language" />
         <ListPreference
+            android:defaultValue="@string/settings_get"
             android:entries="@array/settings_http"
             android:entryValues="@array/settings_http"
             android:key="http"
@@ -23,6 +25,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_web_service">
         <ListPreference
+            android:defaultValue="@string/sqlite_openhelper"
             android:entries="@array/db_type"
             android:entryValues="@array/db_type"
             android:key="db"

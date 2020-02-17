@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ public class QuotationActivity extends AppCompatActivity {
     private String quote, author;
     private boolean addVisible;
     private String databaseMethod = "SQLiteOpenHelper";
+    private Handler handler;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -62,6 +64,8 @@ public class QuotationActivity extends AppCompatActivity {
             nQuotationReceived = savedInstanceState.getInt("nQuotation");
             databaseMethod = savedInstanceState.getString("db");
         }
+
+        handler = new Handler();
     }
 
     public void newQuotation(View view, int nQuotation) {
@@ -113,11 +117,14 @@ public class QuotationActivity extends AppCompatActivity {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                if (QuotationSQLiteOpenHelper.getInstance(getBaseContext()).existQuotation(quote)) {
-                                    addVisible = false;
-                                } else {
-                                    addVisible = true;
-                                }
+                                final boolean res = QuotationSQLiteOpenHelper.getInstance(getBaseContext()).existQuotation(quote);
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        addVisible = !res;
+                                        menuAdd.setVisible(addVisible);
+                                    }
+                                });
                             }
                         }).start();
                         break;
@@ -126,11 +133,14 @@ public class QuotationActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 Quotation textQuotationExistence = QuotationDatabase.getInstance(getBaseContext()).quotationDAO().getQuotationText(tvQuotation.getText().toString());
-                                if (!textQuotationExistence.getQuoteText().equals("")) {
-                                    addVisible = false;
-                                } else {
-                                    addVisible = true;
-                                }
+                                final boolean res = textQuotationExistence.getQuoteText().equals("");
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        addVisible = res;
+                                        menuAdd.setVisible(addVisible);
+                                    }
+                                });
                             }
                         }).start();
                         break;

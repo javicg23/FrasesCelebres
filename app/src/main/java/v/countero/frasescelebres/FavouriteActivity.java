@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -23,17 +24,22 @@ import org.w3c.dom.Text;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 import v.countero.frasescelebres.adapters.RecyclerAdapter;
 import v.countero.frasescelebres.databases.QuotationDatabase;
 import v.countero.frasescelebres.databases.QuotationSQLiteOpenHelper;
 import v.countero.frasescelebres.pojos.Quotation;
+import v.countero.frasescelebres.tasks.FavouriteAsyncTask;
 
 public class FavouriteActivity extends AppCompatActivity {
 
-    RecyclerView recycler;
+    private RecyclerView recycler;
     private RecyclerAdapter adapter = null;
     private String databaseMethod = "SQLiteOpenHelper";
+    private ArrayList<Quotation> data;
+    private MenuItem clearAll;
+    private Handler handler;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -63,18 +69,7 @@ public class FavouriteActivity extends AppCompatActivity {
         } else {
             databaseMethod = savedInstanceState.getString("db");
         }
-
-        ArrayList<Quotation> data = null;
-
-        switch (databaseMethod) {
-            case "SQLiteOpenHelper":
-                data = QuotationSQLiteOpenHelper.getInstance(this).getQuotations();
-                break;
-            case "Room":
-                data = (ArrayList<Quotation>) QuotationDatabase.getInstance(this).quotationDAO().getQuotations();
-                break;
-        }
-
+        data = new ArrayList<>();
 
         RecyclerAdapter.OnItemClickListener clickListener = new RecyclerAdapter.OnItemClickListener() {
             @Override
@@ -92,6 +87,11 @@ public class FavouriteActivity extends AppCompatActivity {
         adapter = new RecyclerAdapter(data, clickListener, longClickListener);
         recycler.setAdapter(adapter);
 
+        FavouriteAsyncTask favouriteAsyncTask = new FavouriteAsyncTask(this);
+        boolean methodDatabse = databaseMethod.equals("SQLiteOpenHelper");
+        favouriteAsyncTask.execute(methodDatabse);
+
+        handler = new Handler();
     }
 
     private void showRemovedDialog(final int position) {
@@ -112,6 +112,13 @@ public class FavouriteActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 QuotationSQLiteOpenHelper.getInstance(getBaseContext()).removeQuotation(adapter.getQuotationByPosition(position).getQuoteText());
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.removeElementByPosition(position);
+                                        setInvisibleClearAll(clearAll);
+                                    }
+                                });
                             }
                         }).start();
                         break;
@@ -120,11 +127,17 @@ public class FavouriteActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 QuotationDatabase.getInstance(getBaseContext()).quotationDAO().deleteQuotation(adapter.getQuotationByPosition(position));
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.removeElementByPosition(position);
+                                        setInvisibleClearAll(clearAll);
+                                    }
+                                });
                             }
                         }).start();
                         break;
                 }
-                adapter.removeElementByPosition(position);
             }
         });
         builder.create().show();
@@ -154,7 +167,8 @@ public class FavouriteActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_favourite, menu);
-        setInvisibleClearAll(menu.findItem(R.id.menu_clear_all));
+        clearAll = menu.findItem(R.id.menu_clear_all);
+        setInvisibleClearAll(clearAll);
         return true;
     }
 
@@ -181,7 +195,14 @@ public class FavouriteActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 deleteData();
-                                setInvisibleClearAll(item);}
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.removeAllData();
+                                        setInvisibleClearAll(item);
+                                    }
+                                });
+                            }
                         }).start();
                     }
                 });
@@ -206,7 +227,6 @@ public class FavouriteActivity extends AppCompatActivity {
     }
 
     public void deleteData() {
-        adapter.removeAllData();
         switch (databaseMethod) {
             case "SQLiteOpenHelper":
                 QuotationSQLiteOpenHelper.getInstance(this).removeAll();
@@ -220,6 +240,17 @@ public class FavouriteActivity extends AppCompatActivity {
     public void setInvisibleClearAll(MenuItem item) {
         if (adapter.getItemCount() <= 0) {
             item.setVisible(false);
+        } else {
+            item.setVisible(true);
+        }
+    }
+
+    public void addQuotesRefresh(List<Quotation> list) {
+        data.clear();
+        data.addAll(list);
+        adapter.notifyDataSetChanged();
+        if (clearAll != null) {
+            setInvisibleClearAll(clearAll);
         }
     }
 }
