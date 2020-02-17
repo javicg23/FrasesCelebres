@@ -108,10 +108,20 @@ public class FavouriteActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (databaseMethod) {
                     case "SQLiteOpenHelper":
-                        QuotationSQLiteOpenHelper.getInstance(getBaseContext()).removeQuotation(adapter.getQuotationByPosition(position).getQuoteText());
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                QuotationSQLiteOpenHelper.getInstance(getBaseContext()).removeQuotation(adapter.getQuotationByPosition(position).getQuoteText());
+                            }
+                        }).start();
                         break;
                     case "Room":
-                        QuotationDatabase.getInstance(getBaseContext()).quotationDAO().deleteQuotation(adapter.getQuotationByPosition(position));
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                QuotationDatabase.getInstance(getBaseContext()).quotationDAO().deleteQuotation(adapter.getQuotationByPosition(position));
+                            }
+                        }).start();
                         break;
                 }
                 adapter.removeElementByPosition(position);
@@ -167,8 +177,12 @@ public class FavouriteActivity extends AppCompatActivity {
                 builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        deleteData();
-                        setInvisibleClearAll(item);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                deleteData();
+                                setInvisibleClearAll(item);}
+                        }).start();
                     }
                 });
                 builder.create().show();

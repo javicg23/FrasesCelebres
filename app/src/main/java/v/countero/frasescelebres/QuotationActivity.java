@@ -87,10 +87,20 @@ public class QuotationActivity extends AppCompatActivity {
             case R.id.menu_add:
                 switch (databaseMethod) {
                     case "SQLiteOpenHelper":
-                        QuotationSQLiteOpenHelper.getInstance(this).insertQuotation(quote, author);
-                        break;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                QuotationSQLiteOpenHelper.getInstance(getBaseContext()).insertQuotation(quote, author);
+                            }
+                        }).start();
+                       break;
                     case "Room":
-                        QuotationDatabase.getInstance(this).quotationDAO().insertQuotation(new Quotation(quote, author));
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                QuotationDatabase.getInstance(getBaseContext()).quotationDAO().insertQuotation(new Quotation(quote, author));
+                            }
+                        }).start();
                         break;
                 }
                 menuAdd.setVisible(false);
@@ -100,19 +110,29 @@ public class QuotationActivity extends AppCompatActivity {
                 newQuotation(item.getActionView(), nQuotationReceived);
                 switch (databaseMethod) {
                     case "SQLiteOpenHelper":
-                        if (QuotationSQLiteOpenHelper.getInstance(this).existQuotation(quote)) {
-                            addVisible = false;
-                        } else {
-                            addVisible = true;
-                        }
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (QuotationSQLiteOpenHelper.getInstance(getBaseContext()).existQuotation(quote)) {
+                                    addVisible = false;
+                                } else {
+                                    addVisible = true;
+                                }
+                            }
+                        }).start();
                         break;
                     case "Room":
-                        Quotation textQuotationExistence = QuotationDatabase.getInstance(this).quotationDAO().getQuotationText(tvQuotation.getText().toString());
-                        if (!textQuotationExistence.getQuoteText().equals("")) {
-                            addVisible = false;
-                        } else {
-                            addVisible = true;
-                        }
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Quotation textQuotationExistence = QuotationDatabase.getInstance(getBaseContext()).quotationDAO().getQuotationText(tvQuotation.getText().toString());
+                                if (!textQuotationExistence.getQuoteText().equals("")) {
+                                    addVisible = false;
+                                } else {
+                                    addVisible = true;
+                                }
+                            }
+                        }).start();
                         break;
                 }
                 menuAdd.setVisible(addVisible);
