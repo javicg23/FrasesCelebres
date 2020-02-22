@@ -10,29 +10,30 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import v.countero.frasescelebres.databases.QuotationDatabase;
 import v.countero.frasescelebres.databases.QuotationSQLiteOpenHelper;
 import v.countero.frasescelebres.pojos.Quotation;
+import v.countero.frasescelebres.tasks.QuotationAsyncTask;
 
 public class QuotationActivity extends AppCompatActivity {
 
     private TextView tvQuotation, tvAuthor;
-    private int nQuotationReceived = 0;
     private MenuItem menuAdd;
     private String quote, author;
     private boolean addVisible;
     private String databaseMethod = "SQLiteOpenHelper";
     private Handler handler;
+    private ProgressBar progressBar;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("quote", quote);
         outState.putString("author", author);
-        outState.putInt("nQuotation", nQuotationReceived);
         outState.putBoolean("addVisible", menuAdd.isVisible());
         outState.putString("db", databaseMethod);
     }
@@ -44,6 +45,7 @@ public class QuotationActivity extends AppCompatActivity {
 
         tvQuotation = findViewById(R.id.tvQuotation);
         tvAuthor = findViewById(R.id.tvAuthor);
+        progressBar = findViewById(R.id.progressBar);
 
         if (savedInstanceState == null) {
 
@@ -61,18 +63,10 @@ public class QuotationActivity extends AppCompatActivity {
             tvQuotation.setText(quote);
             tvAuthor.setText(author);
             addVisible = savedInstanceState.getBoolean("addVisible");
-            nQuotationReceived = savedInstanceState.getInt("nQuotation");
             databaseMethod = savedInstanceState.getString("db");
         }
 
         handler = new Handler();
-    }
-
-    public void newQuotation(View view, int nQuotation) {
-        quote = getString(R.string.sample_quotation).replace("%1$d", nQuotation+"");
-        author = getString(R.string.sample_autor).replace("%1$d", nQuotation+"");
-        tvAuthor.setText(author);
-        tvQuotation.setText(quote);
     }
 
     @Override
@@ -110,45 +104,62 @@ public class QuotationActivity extends AppCompatActivity {
                 menuAdd.setVisible(false);
                 break;
             case R.id.menu_refresh:
-                nQuotationReceived++;
-                newQuotation(item.getActionView(), nQuotationReceived);
-                switch (databaseMethod) {
-                    case "SQLiteOpenHelper":
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                final boolean res = QuotationSQLiteOpenHelper.getInstance(getBaseContext()).existQuotation(quote);
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        addVisible = !res;
-                                        menuAdd.setVisible(addVisible);
-                                    }
-                                });
-                            }
-                        }).start();
-                        break;
-                    case "Room":
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Quotation textQuotationExistence = QuotationDatabase.getInstance(getBaseContext()).quotationDAO().getQuotationText(tvQuotation.getText().toString());
-                                final boolean res = textQuotationExistence.getQuoteText().equals("");
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        addVisible = res;
-                                        menuAdd.setVisible(addVisible);
-                                    }
-                                });
-                            }
-                        }).start();
-                        break;
-                }
-                menuAdd.setVisible(addVisible);
+                QuotationAsyncTask quotationAsyncTask = new QuotationAsyncTask(this);
+                quotationAsyncTask.execute();
                 super.onOptionsItemSelected(item);
         }
         Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
         return true;
+    }
+
+    public void hideActionBarShowProgressBar() {
+        menuAdd.setVisible(false);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void quotationReceivedFromWebService(Quotation quotation) {
+        tvQuotation.setText(quotation.getQuoteText());
+        quote = quotation.getQuoteText();
+        tvAuthor.setText(quotation.getQuoteAuthor());
+        author = quotation.getQuoteAuthor();
+        progressBar.setVisibility(View.GONE);
+        checkExistingQuotation();
+    }
+
+    public void checkExistingQuotation() {
+        switch (databaseMethod) {
+            case "SQLiteOpenHelper":
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final boolean res = QuotationSQLiteOpenHelper.getInstance(getBaseContext()).existQuotation(quote);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                addVisible = !res;
+                                menuAdd.setVisible(addVisible);
+                            }
+                        });
+                    }
+                }).start();
+                break;
+            case "Room":
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Quotation textQuotationExistence = QuotationDatabase.getInstance(getBaseContext()).quotationDAO().getQuotationText(tvQuotation.getText().toString());
+                        final boolean res = textQuotationExistence.getQuoteText().equals("");
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                addVisible = res;
+                                menuAdd.setVisible(addVisible);
+                            }
+                        });
+                    }
+                }).start();
+                break;
+        }
+        menuAdd.setVisible(addVisible);
     }
 }
