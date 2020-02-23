@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -104,9 +107,11 @@ public class QuotationActivity extends AppCompatActivity {
                 menuAdd.setVisible(false);
                 break;
             case R.id.menu_refresh:
-                QuotationAsyncTask quotationAsyncTask = new QuotationAsyncTask(this);
-                quotationAsyncTask.execute();
-                super.onOptionsItemSelected(item);
+                if (isNetworkConnected()) {
+                    QuotationAsyncTask quotationAsyncTask = new QuotationAsyncTask(this);
+                    quotationAsyncTask.execute();
+                    super.onOptionsItemSelected(item);
+                }
         }
         Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
         return true;
@@ -161,5 +166,11 @@ public class QuotationActivity extends AppCompatActivity {
                 break;
         }
         menuAdd.setVisible(addVisible);
+    }
+
+    public boolean isNetworkConnected() {
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo info = manager.getActiveNetworkInfo();
+        return info != null && info.isConnected();
     }
 }

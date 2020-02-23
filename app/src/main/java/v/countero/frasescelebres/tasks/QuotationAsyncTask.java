@@ -1,9 +1,24 @@
 package v.countero.frasescelebres.tasks;
 
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
+
 import v.countero.frasescelebres.QuotationActivity;
+import v.countero.frasescelebres.R;
 import v.countero.frasescelebres.pojos.Quotation;
 
 public class QuotationAsyncTask extends AsyncTask<Void, Void, Quotation> {
@@ -26,12 +41,50 @@ public class QuotationAsyncTask extends AsyncTask<Void, Void, Quotation> {
     protected void onPostExecute(Quotation quotation) {
         super.onPostExecute(quotation);
         if (reference.get() != null) {
-            reference.get().quotationReceivedFromWebService(new Quotation("hola", "prueba"));
+            reference.get().quotationReceivedFromWebService(quotation);
         }
     }
 
     @Override
     protected Quotation doInBackground(Void... voids) {
-        return new Quotation("","");
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https");
+        builder.authority("api.forismatic.com");
+        builder.appendPath("api");
+        builder.appendPath("1.0");
+        builder.appendPath("");
+        builder.appendQueryParameter("method", "getQuote");
+        builder.appendQueryParameter("format", "json");
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(reference.get());
+        String language = prefs.getString("language", "en");
+        if (language.equals(reference.get().getResources().getString(R.string.settings_russian))){
+            language = "ru";
+        } else {
+            language = "en";
+        }
+
+        builder.appendQueryParameter("lang", language);
+        Quotation quotation = null;
+
+        try {
+            URL url = new URL(builder.build().toString());
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setDoInput(true);
+
+            if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                Log.d("HTTP", reader.readLine());
+                Gson gson= new Gson();
+                quotation = gson.fromJson(reader, Quotation.class);
+                reader.close();
+            }
+            connection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return quotation;
     }
 }

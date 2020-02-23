@@ -8,10 +8,6 @@
         <item>@string/settings_get</item>
         <item>@string/settings_post</item>
     </array>
-    <integer-array name="settings_values">
-        <item>0</item>
-        <item>1</item>
-    </integer-array>
     <array name="db_type">
         <item>@string/sqlite_openhelper</item>
         <item>@string/room</item>
