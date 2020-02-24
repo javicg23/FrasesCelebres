@@ -4,15 +4,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -53,19 +52,34 @@ public class QuotationAsyncTask extends AsyncTask<Void, Void, Quotation> {
         builder.appendPath("api");
         builder.appendPath("1.0");
         builder.appendPath("");
-        builder.appendQueryParameter("method", "getQuote");
-        builder.appendQueryParameter("format", "json");
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(reference.get());
+        String petition = prefs.getString("http","GET");
         String language = prefs.getString("language", "en");
-        builder.appendQueryParameter("lang", language);
+        String body = "";
+        if (petition.equals(reference.get().getResources().getString(R.string.settings_get))) {
+            builder.appendQueryParameter("method", "getQuote");
+            builder.appendQueryParameter("format", "json");
+            builder.appendQueryParameter("lang", language);
+        } else {
+            body = "method=getQuote&format=json&lang=" + language;
+        }
+
         Quotation quotation = null;
 
         try {
             URL url = new URL(builder.build().toString());
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod(petition);
             connection.setDoInput(true);
+
+            if (petition.equals(reference.get().getResources().getString(R.string.settings_post))) {
+                connection.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+                writer.write(body);
+                writer.flush();
+                writer.close();
+            }
 
             if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));

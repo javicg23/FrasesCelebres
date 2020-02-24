@@ -2,11 +2,10 @@ package v.countero.frasescelebres;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -31,6 +30,7 @@ public class QuotationActivity extends AppCompatActivity {
     private String databaseMethod = "SQLiteOpenHelper";
     private Handler handler;
     private ProgressBar progressBar;
+    private QuotationAsyncTask quotationAsyncTask;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -108,13 +108,21 @@ public class QuotationActivity extends AppCompatActivity {
                 break;
             case R.id.menu_refresh:
                 if (isNetworkConnected()) {
-                    QuotationAsyncTask quotationAsyncTask = new QuotationAsyncTask(this);
+                    quotationAsyncTask = new QuotationAsyncTask(this);
                     quotationAsyncTask.execute();
                     super.onOptionsItemSelected(item);
                 }
         }
         Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
         return true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (quotationAsyncTask != null && quotationAsyncTask.getStatus() == AsyncTask.Status.RUNNING) {
+            quotationAsyncTask.cancel(true);
+        }
     }
 
     public void hideActionBarShowProgressBar() {
@@ -170,7 +178,10 @@ public class QuotationActivity extends AppCompatActivity {
 
     public boolean isNetworkConnected() {
         ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo info = manager.getActiveNetworkInfo();
+        NetworkInfo info = null;
+        if (manager != null) {
+            info = manager.getActiveNetworkInfo();
+        }
         return info != null && info.isConnected();
     }
 }
