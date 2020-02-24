@@ -19,6 +19,7 @@ public class Quotation {
         this.quoteAuthor = quoteAuthor;
     }
 
+
     public String getQuoteText() {
         return quoteText;
     }

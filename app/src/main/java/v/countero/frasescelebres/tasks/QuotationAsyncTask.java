@@ -58,12 +58,6 @@ public class QuotationAsyncTask extends AsyncTask<Void, Void, Quotation> {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(reference.get());
         String language = prefs.getString("language", "en");
-        if (language.equals(reference.get().getResources().getString(R.string.settings_russian))){
-            language = "ru";
-        } else {
-            language = "en";
-        }
-
         builder.appendQueryParameter("lang", language);
         Quotation quotation = null;
 
@@ -75,8 +69,7 @@ public class QuotationAsyncTask extends AsyncTask<Void, Void, Quotation> {
 
             if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                Log.d("HTTP", reader.readLine());
-                Gson gson= new Gson();
+                Gson gson = new Gson();
                 quotation = gson.fromJson(reader, Quotation.class);
                 reader.close();
             }

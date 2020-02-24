@@ -4,6 +4,10 @@
         <item>@string/settings_english</item>
         <item>@string/settings_russian</item>
     </array>
+    <array name="settings_languages_value">
+        <item>@string/settings_english_value</item>
+        <item>@string/settings_russian_value</item>
+    </array>
     <array name="settings_http">
         <item>@string/settings_get</item>
         <item>@string/settings_post</item>
